@@ -1,0 +1,256 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>全国市场主体信用信息公示系统</title>
+	<link href="/country_credit/bj/css/public3.css" type="text/css" rel="stylesheet" />
+	<link href="/country_credit/bj/css/style.css" type="text/css" rel="stylesheet" />
+	<script type="text/javascript" src="/country_credit/bj/javascript/jquery-1.9.1.js"></script><!-- 1.9版本jQuery js   1-->
+	<script type="text/javascript" src="/country_credit/bj/javascript/bj_js/pubInfo.js"></script><!-- 北京首页pubInfo.js js   -->
+	<script type="text/javascript" src="/country_credit/bj/javascript/bj_js/gs_tab.js"></script><!-- 工商公示 tab页签的变化 js   -->
+	<script type="text/javascript">
+	var rootPath = ''; 
+ 	var entId = '20e38b8b519e2a9c0151a3a022011beb';
+	var entName = '北京桓宇教育科技有限公司';
+	var entNo = '110116020363764'; 
+	var type = 'ccycDiv'; 
+	var checkCodeServletName = "CheckCodeYunSuan";
+	$(document).ready(function(){ 
+	    if(!type){
+		    gsCheckCurrentTab('djxxDiv',entId);
+		}else{
+		    gsCheckCurrentTab(type,entId);
+		}
+	});  
+	
+	
+//工商公示 页面显示tab也内容显示
+function gsCheckCurrentTab(currentId,entId){ 
+	var liAIdArr =['djxxDiv','bgxxDiv','dcdyDiv','gqczdjDiv','xzcfDiv','jyycDiv','yzwfDiv','ccycDiv'];
+	for(var i=0;i<liAIdArr.length;i++){
+		if(currentId==liAIdArr[i]){
+			$("#"+currentId).css('display','block'); 
+			if(currentId=='djxxDiv'){//登记信息
+				var entName = encodeURIComponent(jQuery.trim(entName));
+				$("#tzrFrame").attr("src",rootPath+"/gjjbj/gjjQueryCreditAction!tzrFrame.dhtml?ent_id="+encodeURIComponent(jQuery.trim(entId))+"&entName="+entName+"&clear=true&timeStamp="+new Date().getTime());//给该url一个时间戳~~这样就必须每次从服务器读取数据
+				$("#bgxxFrame").attr("src",rootPath+"/gjjbj/gjjQueryCreditAction!biangengFrame.dhtml?ent_id="+encodeURIComponent(jQuery.trim(entId))+"&clear=true&timeStamp="+new Date().getTime());
+			}else if(currentId=='bgxxDiv'){//变更信息
+				$("#zyryFrame").attr("src",rootPath+"/gjjbj/gjjQueryCreditAction!zyryFrame.dhtml?ent_id="+encodeURIComponent(jQuery.trim(entId))+"&clear=true&timeStamp="+new Date().getTime());
+				$("#fzjgFrame").attr("src",rootPath+"/gjjbj/gjjQueryCreditAction!fzjgFrame.dhtml?ent_id="+encodeURIComponent(jQuery.trim(entName))+"&clear=true&timeStamp="+new Date().getTime());
+				ajaxChange(entId);
+			}else if(currentId=='dcdyDiv'){//动产抵押
+				$("#dcdyFrame").attr("src",rootPath+"/gjjbjTab/gjjTabQueryCreditAction!dcdyFrame.dhtml?entId="+encodeURIComponent(jQuery.trim(entId))+"&clear=true&timeStamp="+new Date().getTime());
+			}else if(currentId=='gqczdjDiv'){//股权出质登记信息
+				 $("#gqczdjFrame").attr("src",rootPath+"/gdczdj/gdczdjAction!gdczdjFrame.dhtml?entId="+encodeURIComponent(jQuery.trim(entId))+"&clear=true&timeStamp="+new Date().getTime());
+			}else if(currentId=='xzcfDiv'){//行政处罚
+				$("#xzcfFrame").attr("src",rootPath+"/gsgs/gsxzcfAction!list.dhtml?entId="+encodeURIComponent(jQuery.trim(entId))+"&clear=true&timeStamp="+new Date().getTime());
+			}else if(currentId=='jyycDiv'){//经营异常
+				$("#jyycFrame").attr("src",rootPath+"/gsgs/gsxzcfAction!list_jyycxx.dhtml?entId="+encodeURIComponent(jQuery.trim(entId))+"&clear=true&timeStamp="+new Date().getTime());
+			}else if(currentId=='yzwfDiv'){//严重违法
+				$("#yzwfFrame").attr("src",rootPath+"/gsgs/gsxzcfAction!list_yzwfxx.dhtml?ent_id="+encodeURIComponent(jQuery.trim(entId))+"&clear=true&timeStamp="+new Date().getTime());
+			}else if(currentId=='ccycDiv'){//抽查检查
+				$("#ccycFrame").attr("src",rootPath+"/gsgs/gsxzcfAction!list_ccjcxx.dhtml?ent_id="+encodeURIComponent(jQuery.trim(entId))+"&clear=true&timeStamp="+new Date().getTime());
+			}
+		}else{
+			$("#"+liAIdArr[i]).css('display','none'); 
+		}
+	}
+}
+	</script> 
+</head>
+<body>
+<div id="header">
+	<div class="top">
+		<div class="top-a">
+			<a href="#"  onclick="toCountryIndex();">全国首页</a>
+			<a href="#" onclick="toIndex();">地方局首页</a>
+		 </div> <!-- 新的tab头 -->
+	</div> 
+</div>
+<div id="details" class="clear">
+	
+		<h2 id="gsh2">
+	
+  		 北京桓宇教育科技有限公司 &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; 
+  		  
+  		  	统一社会信用代码：91110116MA002GA801
+  		   &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; "该企业已列入经营异常名录"
+  	 </h2>
+	
+	  
+   <br/>
+   <div id="leftTabs">
+	    <ul>
+	      <li class="current" style="margin-bottom:2px;"><p>工<br />商<br />公<br />示<br />信<br />息</p></li>
+	   		  
+				 <li onclick="togo('2','B27E98E55238CC624086AB71CF3AC7E5')" style="margin-bottom:2px;"><p>企<br />业<br />公<br />示<br />信<br />息</p></li>
+			
+	     <li onclick="togo('3','B27E98E55238CC624086AB71CF3AC7E5')"><p style="padding-top:15px;">其<br />他<br />部<br />门<br />公<br />示<br />信<br />息</p></li>
+	    </ul>
+   </div>
+
+   	<div id="detailsCon" style="min-height:800px;height:auto;">
+   		<div class="dConBox" >
+   			  <div class="tabs" id="tabs">
+			       <ul>
+							<li id="0"  onclick="gsCheckCurrentTab('djxxDiv','20e38b8b519e2a9c0151a3a022011beb'),changeStyle('tabs',this)">登记信息</li>
+							<li id="1" onclick="gsCheckCurrentTab('bgxxDiv','20e38b8b519e2a9c0151a3a022011beb'),changeStyle('tabs',this)">备案信息</li>
+					       	<li id="2" onclick="gsCheckCurrentTab('dcdyDiv','20e38b8b519e2a9c0151a3a022011beb'),changeStyle('tabs',this)">动产抵押登记信息</li>
+							<li id="3" onclick="gsCheckCurrentTab('gqczdjDiv','20e38b8b519e2a9c0151a3a022011beb'),changeStyle('tabs',this)">股权出质登记信息</li>
+							<li id="4" onclick="gsCheckCurrentTab('xzcfDiv','20e38b8b519e2a9c0151a3a022011beb'),changeStyle('tabs',this)">行政处罚信息</li>
+							<li id="5"  onclick="gsCheckCurrentTab('jyycDiv','20e38b8b519e2a9c0151a3a022011beb'),changeStyle('tabs',this)">经营异常信息</li>
+							<li id="6"  onclick="gsCheckCurrentTab('yzwfDiv','20e38b8b519e2a9c0151a3a022011beb'),changeStyle('tabs',this)">严重违法信息</li>
+							<li id="7" class="current" onclick="gsCheckCurrentTab('ccycDiv','20e38b8b519e2a9c0151a3a022011beb'),changeStyle('tabs',this)">抽查检查信息</li>
+						 </ul>
+		      </div>
+		      <br/>
+		      <!-- 登记信息  ~~~~~~~~~~~begin~~~~~~~~~ -->
+		       <div id="djxxDiv">
+			      <div id="jbxx">
+			      		
+							 
+						<!-- 内资公司法人 -->
+
+
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title>全国市场主体信用信息公示系统</title>
+	<link href="/country_credit/bj/css/public3.css" type="text/css" rel="stylesheet" />
+</head>
+<body>
+	 <table cellspacing="0" cellpadding="0" class="detailsList" >
+	      	<tr>
+	      		<th colspan="4" style="text-align:center;">基本信息 </th>
+	      	</tr>
+	      	
+	      	<tr>
+	          
+		      	<th width="20%">统一社会信用代码</th>
+	         	<td width="30%">91110116MA002GA801</td>
+		        
+	          <th>名称</th>
+	          <td width="30%">北京桓宇教育科技有限公司</td>
+	        </tr>
+	       
+	        <tr>
+		        <th>类型</th>
+		        <td>有限责任公司(自然人独资)</td>
+		        <th width="20%">法定代表人</th>
+		        <td>孙大鹏</td>
+	        </tr>
+	        
+	         <tr>
+		        <th>注册资本</th>
+		        <td>
+					
+			      	   50 万元 
+			         
+			      </td>
+		        <th width="20%">成立日期</th>
+	             <td>2015年12月10日</td>
+	        </tr>
+	        <tr>
+	           <th>住所</th>
+	           <td colspan="3">北京市怀柔区雁栖经济开发区乐园大街17号2层</td>
+	        </tr>
+	         <tr>
+	        	<th>营业期限自</th>
+	            <td>2015年12月10日</td>
+	         	 <th>营业期限至</th>
+	           <td></td>
+	        </tr>
+	        
+	         <tr>
+	          <th>经营范围</th>
+	         <td colspan="3">技术开发、咨询、转让、服务、推广；教育咨询、经济贸易咨询、企业形象策划；计算机技术培训（不得面向全国招生）；电脑图文设计、制作；设计、制作、代理、发布广告；组织文化艺术交流活动（不含演出）。（依法须经批准的项目，经相关部门批准后依批准的内容开展经营活动。）</td>
+	        </tr>
+	         <tr>
+	          <th width="20%">登记机关</th>
+	          <td>怀柔分局</td>
+	          <th>核准日期</th>
+	          <td>2015年12月10日</td>
+	        </tr>
+	         <tr>
+	        	<th>登记状态</th>
+		        <td>在营（开业）企业</td>
+	            
+        	          <th width="20%"></th>
+      	              <td></td>
+                
+	        </tr>
+	   </table>
+</body>
+</html>
+	
+			      </div><br/>
+			      <div id="tzr">
+			      		<iframe id="tzrFrame" scrolling="yes"  onload="Javascript:SetCwinHeight(this)"  frameborder="0" src="" style="width:100%;"></iframe>
+			      </div><br/>
+			      <div id="bgxx">
+			      		<iframe id="bgxxFrame" scrolling="yes"  onload="Javascript:SetCwinHeight(this)"  frameborder="0" src="" style="width:100%;"></iframe>
+			      </div>
+		      </div>
+		       <!-- 备案信息  ~~~~~~~~~~~begin~~~~~~~~~ -->
+		      <div id="bgxxDiv"  style="display:none">
+			      <div id="zyry">
+			      		<iframe id="zyryFrame" scrolling="yes"  onload="Javascript:SetCwinHeight(this)"  frameborder="0" src="" style="width:100%;"></iframe>
+			      </div><br/>	
+				  <div id="fzjg">
+				  		<iframe id="fzjgFrame" scrolling="yes"  onload="Javascript:SetCwinHeight(this)"  frameborder="0" src="" style="width:100%;"></iframe>
+				  </div><br/>
+				  <div id="qsxx">
+				  </div>
+			  </div>
+			   <!-- 动产抵押登记信息  ~~~~~~~~~~~begin~~~~~~~~~ -->
+			   <div id="dcdyDiv"  style="display:none">
+			      <div id="dcdy">
+			      		<iframe id="dcdyFrame" scrolling="no"  onload="Javascript:SetCwinHeight(this)"  frameborder="0" src="" style="width:100%;"></iframe>
+			      </div>
+			  </div>
+			   <!-- 股权出质登记信息  ~~~~~~~~~~~begin~~~~~~~~~ -->
+			   <div id="gqczdjDiv"  style="display:none">
+			      <div id="gqczdj">
+			      		<iframe id="gqczdjFrame" scrolling="yes"  onload="Javascript:SetCwinHeight(this)"  frameborder="0" src="" style="width:100%;"></iframe>
+			      </div>
+			  </div>
+			   <!-- 行政处罚信息  ~~~~~~~~~~~begin~~~~~~~~~ -->
+			  <div id="xzcfDiv"  style="display:none">
+			      <div id="xzcf">
+			      		<iframe id="xzcfFrame" scrolling="yes"  onload="Javascript:SetCwinHeight(this)"  frameborder="0" src="" style="width:100%;"></iframe>
+			      </div>
+			  </div>
+			   <!-- 经营异常信息 ~~~~~~~~~~~begin~~~~~~~~~ -->
+			  <div id="jyycDiv"  style="display:none">
+			      <div id="jyyc">
+			      		<iframe id="jyycFrame" scrolling="yes"  onload="Javascript:SetCwinHeight(this)"  frameborder="0" src="" style="width:100%;"></iframe>
+			      </div>
+			  </div>
+			   <!-- 严重违法信息  ~~~~~~~~~~~begin~~~~~~~~~ -->
+			  <div id="yzwfDiv"  style="display:none">
+			      <div id="yzwf">
+			      		<iframe id="yzwfFrame" scrolling="yes"  onload="Javascript:SetCwinHeight(this)"  frameborder="0" src="" style="width:100%;"></iframe>
+			      </div>
+			  </div>
+			   <!-- 抽查检查信息  ~~~~~~~~~~~begin~~~~~~~~~ -->
+			  <div id="ccycDiv"  style="display:none">
+			      <div id="ccyc">
+			      		<iframe id="ccycFrame" scrolling="yes"  onload="Javascript:SetCwinHeight(this)"  frameborder="0" src="" style="width:100%;"></iframe>
+			      </div>
+			  </div>
+
+  		 </div> 	
+  	</div>
+<div class="banqun" style="padding-bottom:20px;margin-top:10px;">
+              版权所有：北京市工商行政管理局&nbsp;&nbsp;&nbsp;&nbsp;地址：北京市海淀区苏州街36号&nbsp;&nbsp;&nbsp;&nbsp;邮政编码：100080<br />
+              <!-- 业务咨询电话：010-82691213，010-82691523&nbsp;&nbsp;&nbsp;&nbsp;技术支持电话：010-82691768（公示），010-82691101（年报） -->
+</div>
+<div style="display:none;">
+<script src="http://s4.cnzz.com/z_stat.php?id=1257386840&web_id=1257386840" language="JavaScript"></script>
+</div>
+  </div>  
+</body>
+</html>

@@ -1,0 +1,148 @@
+gsxt bj start.....
+
+ 
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>全国市场主体信用信息公示系统</title>
+	<link href="/country_credit/bj/css/style.css" type="text/css" rel="stylesheet" />
+	<script type="text/javascript" src="/js/jquery-1.7.2.min.js"></script><!-- 1.9版本jQuery js   -->
+	<script type="text/javascript" src="/country_credit/bj/javascript/jquery-1.9.1.js"></script><!-- 1.9版本jQuery js   -->
+	<script type="text/javascript" src="/country_credit/bj/javascript/bj_js/query.js"></script><!-- 北京首页query js   -->
+	<script type="text/javascript" src="/country_credit/bj/javascript/bj_js/pubInfo.js"></script> 
+	<script type="text/javascript">
+	 var rootPath = '';
+	function shows(){
+	      var bb=document.getElementById("ennamessss").value;
+	      document.getElementById("querystr").value=bb;
+	      document.getElementById("pageNos").value="1";
+	      document.getElementById("iframeFrame").submit();
+			}
+	   
+	   /**
+		 * 根据具体企业，查看详细情况
+		 */
+		function openEntInfo(regName,regId,regNo, credit_ticket){
+			//var entName = encodeURIComponent(regName);  //此处将+'&entName='+entName 去掉，是为了防止企业名称中有() 安全过滤，直接将此过滤掉
+			var url = rootPath + '/gjjbj/gjjQueryCreditAction!openEntInfo.dhtml?entId='+regId+'&credit_ticket='+credit_ticket+'&entNo='+regNo+'&type=jyycDiv&timeStamp='+new Date().getTime();//给该url一个时间戳~~这样就必须每次从服务器读取数 
+			window.location.href = url;
+		}
+	</script>
+</head>
+
+<body>
+<div class="da">
+  <div class="center-1">
+    <div class="top">
+	 <div class="top-a">
+		 <a href="#"  onclick="toCountryIndex();">全国首页</a>
+		<a href="#" onclick="toIndex();">地方局首页</a>
+	</div> <!-- 新的tab头 -->
+	</div> 
+	    <div class="se-yichang">
+	        <ul>
+		         <li class="input-3">
+		         	<input style="color:#000000;border-radius:5px;" id="ennamessss" type="text" onmouseover=this.focus();this.select();   
+                           value="请输入企业名称或注册号"  onclick="if(value==defaultValue) {value='';}" onBlur="if(!value){value=defaultValue;}"/>
+		         </li>
+	         	<li class="se-su">
+	         	<img id="search" src="/country_credit/bj/images/se-su-a.png"  
+	         	onMouseOver="this.src='/country_credit/bj/images/se-su-a.png'" 
+	         	onMouseOut="this.src='/country_credit/bj/images/se-su-b.png'"  onclick="shows()"/></li>
+	         </ul>
+	   </div>
+	   <div>
+	   <div style="border:1px solid #012e8b; width:990px; float:left; margin-bottom:10px;">
+     <form action="/dito/ditoAction!ycmlFrame.dhtml" method="post"  name="iframeFrame" id="iframeFrame"> 
+	<input type="hidden" name="querystr" value="请输入企业名称或注册号" id="querystr"/>
+	<input type="hidden" id="pageNos" name="pageNos" value="1" />
+		<table width="100%" cellspacing="0" cellpadding="0" class="ccjcList">
+		<tr>
+	        <th style="width:40%;text-align:center;" >企业名称</th>
+	        <th style="width:30%;text-align:center;">注册号</th>
+	      	<th style="width:30%;text-align:center;">被列入经营异常名录日期 </th>
+        </tr>   
+         
+		      <tr style="">
+		        	<td style="text-align:center;"><a href="#"  onclick="openEntInfo('北京富润伟业房地产经纪中心世纪爱家分部','70CEA3506E5645CA857BD50070C24D57','1102212140169', 'D1EE67784419FB9CEFD9B6D57EF9658E');">北京富润伟业房地产经纪中心世纪爱家分部</a></td>
+		        	<td style="text-align:center;">1102212140169</td>
+		        	<td style="text-align:center;">2016年11月25日</td>
+		        </tr>
+         
+		      <tr style="background:#f6f7fb;">
+		        	<td style="text-align:center;"><a href="#"  onclick="openEntInfo('北京新干线房地产经纪有限公司','7D7C1A801E874C42A410C9EC9ABBA71B','1102212921303', 'C4A2565F5D897CE6B14AC26665F29E47');">北京新干线房地产经纪有限公司</a></td>
+		        	<td style="text-align:center;">1102212921303</td>
+		        	<td style="text-align:center;">2016年11月25日</td>
+		        </tr>
+         
+		      <tr style="">
+		        	<td style="text-align:center;"><a href="#"  onclick="openEntInfo('北京东方力量投资有限公司','20e38b8b3d0145fd013d1ecde8153662','653100051019427', 'A66FDC172F54B51619D0E7DB3BB2E6AC');">北京东方力量投资有限公司</a></td>
+		        	<td style="text-align:center;">653100051019427</td>
+		        	<td style="text-align:center;">2016年11月25日</td>
+		        </tr>
+         
+		      <tr style="background:#f6f7fb;">
+		        	<td style="text-align:center;"><a href="#"  onclick="openEntInfo('北京润裕和房地产经纪有限公司','20e38b8b51be70ea0151c25f780326e2','110114020397336', 'A2ADCC398A897C7AEE7E05B4F22868FB');">北京润裕和房地产经纪有限公司</a></td>
+		        	<td style="text-align:center;">110114020397336</td>
+		        	<td style="text-align:center;">2016年11月25日</td>
+		        </tr>
+         
+		      <tr style="">
+		        	<td style="text-align:center;"><a href="#"  onclick="openEntInfo('北京梧桐树幸福房地产经纪有限公司','20e38b8b51c944580151d17726d11aea','110114020421847', '2223244D9ED8670710B3D0977B31F5AD');">北京梧桐树幸福房地产经纪有限公司</a></td>
+		        	<td style="text-align:center;">110114020421847</td>
+		        	<td style="text-align:center;">2016年11月25日</td>
+		        </tr>
+         
+		      <tr style="background:#f6f7fb;">
+		        	<td style="text-align:center;"><a href="#"  onclick="openEntInfo('北京弘亚房地产经纪有限公司','20e38b8b51d1b56d0151d30faa890d06','110114020430108', 'EFAEF52D664CAD2FE4BF0C6C55AD00BF');">北京弘亚房地产经纪有限公司</a></td>
+		        	<td style="text-align:center;">110114020430108</td>
+		        	<td style="text-align:center;">2016年11月25日</td>
+		        </tr>
+         
+		      <tr style="">
+		        	<td style="text-align:center;"><a href="#"  onclick="openEntInfo('北京房屋驿站台房地产经纪中心','20e38b8c3eee726c013ef3024e465bf9','110114601092956', '99CE54C94FB368D233BDB2CF7D7A10F8');">北京房屋驿站台房地产经纪中心</a></td>
+		        	<td style="text-align:center;">110114601092956</td>
+		        	<td style="text-align:center;">2016年11月25日</td>
+		        </tr>
+         
+		      <tr style="background:#f6f7fb;">
+		        	<td style="text-align:center;"><a href="#"  onclick="openEntInfo('天津众合嘉益房地产经纪有限公司北京信息咨询分公司','11C50CB5B4C044719CAAA314828A3972','1102211907102', '49E746E1D5E20127F65D370C72D502EF');">天津众合嘉益房地产经纪有限公司北京信息咨询分公司</a></td>
+		        	<td style="text-align:center;">1102211907102</td>
+		        	<td style="text-align:center;">2016年11月25日</td>
+		        </tr>
+         
+		      <tr style="">
+		        	<td style="text-align:center;"><a href="#"  onclick="openEntInfo('北京红盛博房地产经纪有限公司经济贸易咨询分公司','A047F817F90C4A0A990EC1BDC8F3E7FE','1102211944613', '59C1D98F16FE68C7212B776BE8ABD15A');">北京红盛博房地产经纪有限公司经济贸易咨询分公司</a></td>
+		        	<td style="text-align:center;">1102211944613</td>
+		        	<td style="text-align:center;">2016年11月25日</td>
+		        </tr>
+         
+		      <tr style="background:#f6f7fb;">
+		        	<td style="text-align:center;"><a href="#"  onclick="openEntInfo('北京安客居房地产经纪有限公司','20e38b8c50c7cece0150d578b2802f56','110114020127903', 'AB2D31722C08BD6108C1DBA1B5EEAB76');">北京安客居房地产经纪有限公司</a></td>
+		        	<td style="text-align:center;">110114020127903</td>
+		        	<td style="text-align:center;">2016年11月25日</td>
+		        </tr>
+        
+        
+	    <tr><th colspan='7' style='text-align:right;background:none;'><a href="javascript:void(0)" title="上一页" style="vertical-align:bottom" onclick="jumppage('0');return false"><<</a>&nbsp;&nbsp;<font style='text-decoration:none;color:red'>1</font>&nbsp;&nbsp;<a href="javascript:void(0)" onclick="jumppage('2');return false">2</a>&nbsp;&nbsp;<a href="javascript:void(0)" onclick="jumppage('3');return false">3</a>&nbsp;&nbsp;<a href="javascript:void(0)" onclick="jumppage('4');return false">4</a>&nbsp;&nbsp;<a href="javascript:void(0)" onclick="jumppage('5');return false">5</a>&nbsp;&nbsp;<span style='color:blue;font-size:16px;'>...</span>&nbsp;&nbsp;<a href="javascript:void(0)" title="下一页" style="vertical-align:bottom"  onclick="jumppage('2');return false">>></a>&nbsp;&nbsp;<font  style='color:blue;font-size:14px;'>共21040页&nbsp;&nbsp;记录总数210400条</font>&nbsp;&nbsp;<input type="hidden" id="pageNo" name="pageNo" value='1' /><input type="hidden" value='21040' id="pagescount"/><input type="hidden" id="pageSize" name="pageSize"  value='10' /><input type="hidden" id="clear" name="clear" /></th></tr>
+	    
+	</table> 
+   </form>     
+   </div>
+    
+<div class="banqun" style="padding-bottom:20px;margin-top:10px;">
+              版权所有：北京市工商行政管理局&nbsp;&nbsp;&nbsp;&nbsp;地址：北京市海淀区苏州街36号&nbsp;&nbsp;&nbsp;&nbsp;邮政编码：100080<br />
+              <!-- 业务咨询电话：010-82691213，010-82691523&nbsp;&nbsp;&nbsp;&nbsp;技术支持电话：010-82691768（公示），010-82691101（年报） -->
+</div>
+<div style="display:none;">
+<script src="http://s4.cnzz.com/z_stat.php?id=1257386840&web_id=1257386840" language="JavaScript"></script>
+</div>
+  </div>
+</div> 
+</div> 
+</body>
+</html>
