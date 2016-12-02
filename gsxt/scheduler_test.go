@@ -18,14 +18,14 @@ func TestDownload(t *testing.T) {
 		"Referer":                   "http://qyxy.baic.gov.cn/dito/ditoAction!ycmlFrame.dhtml?clear=true",
 		"Accept-Encoding":           "gzip, deflate",
 		"Accept-Language":           "zh-CN,zh;q=0.8",
-		"Cookie":                    "JSESSIONID=sMktYQnRXpLgQ2Q6b2hzJtZTxrD9ZPHZZM6R2QGgqS90JQxm6bCz!-331494942; CNZZDATA1257386840=399229577-1478569797-http://gsxt.saic.gov.cn/|1480649206",
+		//"Cookie":                    "JSESSIONID=sMktYQnRXpLgQ2Q6b2hzJtZTxrD9ZPHZZM6R2QGgqS90JQxm6bCz!-331494942; CNZZDATA1257386840=399229577-1478569797-http://gsxt.saic.gov.cn/|1480649206",
 	}
 
-	curpage := 9
+	curpage := 2
 	postdata := map[string]string{
 		"querystr": "请输入企业名称或注册号",
 		"pageNos":  strconv.Itoa(curpage),
-		"pageNo":   strconv.Itoa(curpage - 1),
+		"pageNo":   strconv.Itoa(curpage),
 		"pageSize": "10",
 		"clear":    "",
 	}

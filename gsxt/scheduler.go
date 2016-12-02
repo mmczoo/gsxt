@@ -117,14 +117,19 @@ func (p *Scheduler) nextPageLink() *Link {
 	}
 
 	curpage := p.curPage
+	c := rand.Intn(4) + 1
+	if c > curpage {
+		c = 1
+	}
 	postdata := map[string]string{
 		"querystr": "请输入企业名称或注册号",
 		"pageNos":  strconv.Itoa(curpage),
-		"pageNo":   strconv.Itoa(rand.Intn(curpage - 1)),
+		"pageNo":   strconv.Itoa(curpage - c),
 		"pageSize": "10",
 		"clear":    "",
 	}
 	link := NewLinkPost(GSXT_BJ_EXCET_URL, TMPL_GSXT_BJ, postdata)
+	link.CustomeCode = LINK_CC_BJGXST_EXCEPT_LIST
 	p.curPage += 1
 	return link
 }
@@ -137,6 +142,7 @@ func (p *Scheduler) Start() {
 
 	headers := map[string]string{
 		"Accept":          "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+		"Host":            "qyxy.baic.gov.cn",
 		"Accept-Encoding": "gzip, deflate",
 		"Accept-Language": "zh-CN,zh;q=0.8",
 		"Referer":         "http://qyxy.baic.gov.cn/dito/ditoAction!ycmlFrame.dhtml?clear=true",
@@ -156,7 +162,7 @@ func (p *Scheduler) Start() {
 			fmt.Println(link)
 		}
 
-		time.Sleep(time.Duration(rand.Intn(5)+2) * time.Second)
+		time.Sleep(time.Duration(rand.Intn(5)+4) * time.Second)
 
 		var data []byte
 		var err error
