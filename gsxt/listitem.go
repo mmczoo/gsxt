@@ -26,6 +26,17 @@ func (p *ListItem) ToURL() string {
 	return url
 }
 
+func (p *ListItem) ToQynbList() string {
+	//预测二十秒后调度
+	now := time.Now().Add(20)
+	msec := now.UnixNano() / int64(time.Millisecond)
+
+	url := fmt.Sprintf("http://qyxy.baic.gov.cn/qynb/entinfoAction!qyxx.dhtml?entid=%s&clear=true&timeStamp=%d",
+		p.RegId, msec)
+
+	return url
+}
+
 func NewListItem(name, id, no, ct string, it time.Time) *ListItem {
 	return &ListItem{
 		RegName:      name,

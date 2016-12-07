@@ -118,3 +118,62 @@ func TestDetailPage2(t *testing.T) {
 	t.Logf("%v", ret)
 
 }
+
+func TestQynbList(t *testing.T) {
+	data := `<h2 id="qiyeTitle" style="text-align:center;">企业公示信息由该企业提供，企业对其公示信息的真实性、合法性负责</h2>
+    <div id="qiyenianbao">
+		<table  cellpadding="0" cellspacing="0" class="detailsList">
+		<tr><th colspan="4" style="text-align:center;">企业年报</th></tr>
+        <tr width="95">
+		  <th width="5" style="text-align:center;">序号</th>
+          <th width="55" style="text-align:center;">报送年度</th>
+          <th width="40" style="text-align:center;">发布日期</th>
+        </tr>
+         
+         <tr>
+		  	<td style="text-align:center;">1</td>
+		  	
+			<td style="text-align:left;"><a href='/qynb/entinfoAction!qynbxx.dhtml?cid=ca48c1a70dfc47bba954aa034b6be300&entid=20e38b8c4ed2e027014efbe954a751b8&credit_ticket=65B3BD731BE5629884C9170BF2DF9B76' target="_blank">2015年度</a></td>
+			
+			<td style="text-align:center;">2016-06-26&nbsp;</td>
+        </tr>
+			
+	</table>
+ </div>
+</body>
+</html>`
+	rep := regexp.MustCompile(`企业年报(?:[\s\S]*)<td.*>(\d+)</td>(?:[\s\S]*)<a href='(.*)'.*>(.*)</a></td>(?:[\s\S]*)<td.*>(.*?)</td>`)
+	ret := rep.FindStringSubmatch(string(data))
+	t.Logf("%v", ret)
+}
+
+func TestQynbList2(t *testing.T) {
+	data := `<h2 id="qiyeTitle" style="text-align:center;">企业公示信息由该企业提供，企业对其公示信息的真实性、合法性负责</h2>
+    <div id="qiyenianbao">
+		<table  cellpadding="0" cellspacing="0" class="detailsList">
+		<tr><th colspan="4" style="text-align:center;">企业年报</th></tr>
+        <tr width="95">
+		  <th width="5" style="text-align:center;">序号</th>
+          <th width="55" style="text-align:center;">报送年度</th>
+          <th width="40" style="text-align:center;">发布日期</th>
+        </tr>
+         
+         <tr>
+		  	<td style="text-align:center;">1</td>
+		  	
+			<td style="text-align:left;"><a href='/qynb/entinfoAction!qynbxx.dhtml?cid=ca48c1a70dfc47bba954aa034b6be300&entid=20e38b8c4ed2e027014efbe954a751b8&credit_ticket=65B3BD731BE5629884C9170BF2DF9B76' target="_blank">2015年度</a></td>
+			
+			<td style="text-align:center;">2016-06-26&nbsp;</td>
+        </tr>
+			
+	</table>
+ </div>
+</body>
+</html>`
+
+	e := NewExtractor()
+	ret := e.QueryQynb(string(data))
+	for _, v := range ret {
+		t.Logf("%#v", v)
+	}
+}
