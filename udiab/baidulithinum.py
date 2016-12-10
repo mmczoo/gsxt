@@ -28,13 +28,6 @@ dbcfg = {
         "db": "accumulation",
         }
 
-dbcfg2 = {
-        "host": "101.200.87.104",
-        "port": 3306,
-        "user": "mmczoo",
-        "password": "mmczoo@git",
-        "db": "jtyd",
-        }
 
 class Lithium(object):
     conn=MySQLdb.connect(host=dbcfg["host"],
