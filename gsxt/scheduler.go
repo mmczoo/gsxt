@@ -190,6 +190,10 @@ func (p *Scheduler) Start() {
 			p.procBjgxstExceptList(data, link)
 		case LINK_CC_BJGXST_EXCEPT_DETAIL:
 			p.procBjgxstBaseInfo(data, link)
+		case LINK_CC_BJGXST_QYNB_LIST:
+			p.procBjgxstQynbList(data, link)
+		case LINK_CC_BJGXST_QYNB_DETAIL:
+			p.procBjgxstQynbDetail(data, link)
 		}
 	}
 }
@@ -225,7 +229,13 @@ func (p *Scheduler) procBjgxstExceptList(data []byte, link *Link) {
 		p.lmgr.AddLink(l)
 		p.model.InsertListitem(v)
 		//dlog.Info("%d %+v\n", i, v)
+	}
 
+	for _, v := range lis {
+		l := NewLink(v.ToQynbList(), TMPL_GSXT_BJ)
+		l.CustomeCode = LINK_CC_BJGXST_QYNB_LIST
+		l.CustomeData = v
+		p.lmgr.AddLink(l)
 	}
 
 	l := p.nextPageLink()
@@ -244,6 +254,27 @@ func (p *Scheduler) procBjgxstBaseInfo(data []byte, link *Link) {
 	}
 
 	p.model.InsertBaseInfo(binfo)
+}
+
+func (p *Scheduler) procBjgxstQynbList(data []byte, link *Link) {
+	qynbs := p.extractor.QueryQynb(string(data))
+	if qynbs == nil {
+		dlog.Warn("querybaseinfo: fail")
+		return
+	}
+	for _, v := range qynbs {
+
+		l := NewLink(v.ToQynDetailUrl(), TMPL_GSXT_BJ)
+		l.CustomeCode = LINK_CC_BJGXST_QYNB_DETAIL
+		v.Bridge = link.CustomeData
+		l.CustomeData = v
+
+		p.lmgr.AddLink(l)
+	}
+
+}
+
+func (p *Scheduler) procBjgxstQynbDetail(data []byte, link *Link) {
 }
 
 func (p *Scheduler) saveBaseInfoFail(data []byte, link *Link) {

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/xlvector/dlog"
@@ -14,6 +15,7 @@ type Extractor struct {
 	reQueryItem *regexp.Regexp
 	reBaseInfo  *regexp.Regexp
 	reBaseInfo2 *regexp.Regexp
+	reQynb      *regexp.Regexp
 }
 
 func NewExtractor() *Extractor {
@@ -22,6 +24,7 @@ func NewExtractor() *Extractor {
 		reQueryItem: regexp.MustCompile(`openEntInfo\('(.*)','(.*)','(.*)', '(.*)'\)(?:[\s\S]*?)<td(?:[\s\S]*?)<td.*>(.*)</td>`),
 		reBaseInfo:  regexp.MustCompile(`<th.*>(?:统一社会信用代码|注册号)</th>(?:[\s\S]*)<td.*>(.*)</td>(?:[\s\S]*)<th>名称</th>(?:[\s\S]*)<td.*>(.*)</td>(?:[\s\S]*)<th>类型</th>(?:[\s\S]*)<td>(.*)</td>(?:[\s\S]*)<th.*>法定代表人</th>(?:[\s\S]*)<td>(.*)</td>(?:[\s\S]*)<th>注册资本</th>(?:[\s\S]*)<td>([\s\S]*)</td>(?:[\s\S]*)<th.*>成立日期</th>(?:[\s\S]*)<td>(.*)</td>(?:[\s\S]*)<th>住所</th>(?:[\s\S]*)<td.*>(.*)</td>(?:[\s\S]*)<th>营业期限自</th>(?:[\s\S]*)<td>(.*)</td>(?:[\s\S]*)<th>营业期限至</th>(?:[\s\S]*)<td>(.*)</td>(?:[\s\S]*)<th>经营范围</th>(?:[\s\S]*)<td.*>(.*)</td>(?:[\s\S]*)<th.*>登记机关</th>(?:[\s\S]*)<td>(.*)</td>(?:[\s\S]*)<th>核准日期</th>(?:[\s\S]*)<td>(.*?)</td>(?:[\s\S]*)<th>登记状态</th>(?:[\s\S]*)<td>(.*?)</td>`),
 		reBaseInfo2: regexp.MustCompile(`<th.*>(?:统一社会信用代码|注册号)</th>(?:[\s\S]*)<td.*>(.*)</td>(?:[\s\S]*)<th>名称</th>(?:[\s\S]*)<td.*>(.*)</td>(?:[\s\S]*)<th>类型</th>(?:[\s\S]*)<td>(.*)</td>(?:[\s\S]*)<th.*>负责人</th>(?:[\s\S]*)<td>(.*)</td>(?:[\s\S]*)<th>经营场所</th>(?:[\s\S]*)<td.*>(.*)</td>(?:[\s\S]*)<th>营业期限自</th>(?:[\s\S]*)<td>(.*)</td>(?:[\s\S]*)<th>营业期限至</th>(?:[\s\S]*)<td>(.*)</td>(?:[\s\S]*)<th>经营范围</th>(?:[\s\S]*)<td.*>(.*)</td>(?:[\s\S]*)<th.*>登记机关</th>(?:[\s\S]*)<td>(.*)</td>(?:[\s\S]*)<th>核准日期</th>(?:[\s\S]*)<td>(.*?)</td>(?:[\s\S]*)<th.*>登记状态</th>(?:[\s\S]*)<td>(.*?)</td>(?:[\s\S]*)<th.*>成立日期</th>(?:[\s\S]*)<td>(.*?)</td>`),
+		reQynb:      regexp.MustCompile(`企业年报(?:[\s\S]*)<td.*>(\d+)</td>(?:[\s\S]*)<a href='(.*)'.*>(.*)</a></td>(?:[\s\S]*)<td.*>(.*?)</td>`),
 	}
 }
 
@@ -90,6 +93,30 @@ func (p *Extractor) QueryBaseInfo(page string) *BaseInfo {
 
 	return nil
 
+}
+
+func (p *Extractor) QueryQynb(page string) []*QynbList {
+	if len(page) <= 10 {
+		return nil
+	}
+	ret := p.reQynb.FindAllStringSubmatch(page, -1)
+	if ret == nil {
+		return nil
+	}
+	dlog.Info("qynbmatch: %d", len(ret))
+
+	li := make([]*QynbList, 0, len(ret))
+	for _, item := range ret {
+		it, err := time.Parse("2006-01-02", strings.Trim(item[4], "&nbsp;"))
+		if err != nil {
+			dlog.Warn("parse issue time fail! %+v", item[4])
+			continue
+		}
+
+		li = append(li, NewQybList(item[1], item[2], item[3], it))
+	}
+
+	return li
 }
 
 //key info in page or not
