@@ -16,19 +16,19 @@ import redis
 from free import FreeBase
 
 class IP181(FreeBase):
-    startUrl = "http://www.ip181.com/"
-    pageUrl = "http://www.ip181.com/daili/%d.html"
-
+    httpstartUrl = "http://m.66ip.cn/nmtq.php?getnum=100&isp=0&anonymoustype=3&start=&ports=&export=&ipaddress=&area=1&proxytype=0&api=66ip"
+    httpsstartUrl = "http://m.66ip.cn/nmtq.php?getnum=100&isp=0&anonymoustype=3&start=&ports=&export=&ipaddress=&area=1&proxytype=1&api=66ip"
 
     htmlheaders = {
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
             'Accept-Language': 'zh-CN,zh;q=0.8',
-            'Host': 'www.ip181.com',
+            'Host': 'm.66ip.cn',
             'Accept-Encoding': 'gzip, deflate, sdch',
             'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:22.0) Gecko/20100101 Firefox/22.0'
             }
 
-    qre = re.compile("<tr.*?>[\s\S]*?<td>(\d+\.\d+\.\d+\.\d+)</td>[\s\S]*?<td>(\d+)</td>[\s\S]*?<td>(.*?)</td>[\s\S]*?<td>(.*?)</td>[\s\S]*?<td>(.*?)</td>[\s\S]*?<td>(.*?)</td>[\s\S]*?<td>(.*?)</td>")
+    
+    qre = re.compile("(\d+\.\d+\.\d+\.\d+:\d+)<br/>")
 
     def __init__(self):
         super(FreeBase, self).__init__()
@@ -37,7 +37,7 @@ class IP181(FreeBase):
         self.pool = redis.ConnectionPool(host='127.0.0.1', port=6379, db=0) 
         self.rediscli = redis.Redis(connection_pool=self.pool)
 
-        self.rkey = "proxy_ip181"
+        self.rkey = "proxy_66ip"
 
     def getDataByUrl(self, url, **args):
         '''
@@ -46,10 +46,13 @@ class IP181(FreeBase):
         try:
             r = self.ss.get(url)
         except Exception as e:
+            print(e)
             return ""
 
         if r.status_code != 200:
+            print(r.status_code)
             return ""
+        print r.content
         return r.content
 
 
@@ -60,12 +63,13 @@ class IP181(FreeBase):
         if not isinstance(data, unicode):
             data = data.decode("gb2312")
         return self.qre.findall(data)
+        
 
     
     def _genFile(self):
         t = time.localtime()
         strt = '%d-%d-%d' % (t.tm_year, t.tm_mon, t.tm_mday)
-        dr = os.path.join('data', 'ip181', strt)
+        dr = os.path.join('data', '66ip', strt)
         if not os.path.exists(dr):
             os.makedirs(dr)
         nm = '%d_%d.json' % (t.tm_hour, t.tm_min)
@@ -81,20 +85,19 @@ class IP181(FreeBase):
             json.dump(result, f)
     
 
-    def saveToRedis(self, result):
+    def saveToRedis(self, result, ptype):
+        if ptype == "HTTP":
+            rtype = "http://"
+        elif ptype == "HTTPS":
+            rtype = "https://"
+        else:
+            return
         for r in result:
-            ptype = r[3]
-            if "HTTPS" in ptype or "https" in ptype:
-                px = "https://" + r[0] + ":" + r[1]
-                self.rediscli.lpush(self.rkey, px)
-            ptype = ptype.replace("https", "") 
-            ptype = ptype.replace("HTTPS", "") 
-            if "HTTP" in ptype or "http" in ptype:
-                px = "http://" + r[0] + ":" + r[1]
-                self.rediscli.lpush(self.rkey, px)
+            px = rtype  + r
+            self.rediscli.lpush(self.rkey, px)
 
     def run(self):
-        url = self.startUrl
+        url = self.httpstartUrl
         res = self.getDataByUrl(url)
         if not res:
             return
@@ -102,7 +105,19 @@ class IP181(FreeBase):
         if not ret:
             return 
         self.saveResult(ret)
-        self.saveToRedis(ret)
+        self.saveToRedis(ret, "HTTP")
+        print url, len(ret)
+
+        url = self.httpsstartUrl
+        res = self.getDataByUrl(url)
+        if not res:
+            return
+        ret = self.parseData(res, url)
+        if not ret:
+            return 
+        self.saveResult(ret)
+        self.saveToRedis(ret, "HTTPS")
+        print url, len(ret)
 
 
 if __name__ == '__main__':
