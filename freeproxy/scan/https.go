@@ -6,6 +6,17 @@ import (
 )
 
 type ScanHTTPSServer struct {
+	model *Model
+}
+
+func NewScanHTTPSServer(m *Model) *ScanHTTPSServer {
+	if m == nil {
+		return nil
+	}
+
+	return &ScanHTTPSServer{
+		model: m,
+	}
 }
 
 func (p *ScanHTTPSServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {

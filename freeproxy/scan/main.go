@@ -1,17 +1,23 @@
 package main
 
 import (
+	"flag"
 	"net/http"
 )
 
 func main() {
-	go func() {
-		h := &ScanHTTPServer{}
-		http.ListenAndServe(":8080", h)
+	fn := flag.String("f", "config.json", "config file")
+	flag.Parse()
 
+	cfg := NewConfig(*fn)
+	m := NewModel(cfg)
+
+	go func() {
+		h := NewScanHTTPServer(m)
+		http.ListenAndServe(":8080", h)
 	}()
 
-	hs := &ScanHTTPSServer{}
+	hs := NewScanHTTPSServer(m)
 	http.ListenAndServeTLS(":8043", "server.crt",
 		"server.key", hs)
 
