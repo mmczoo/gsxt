@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"encoding/base64"
+	hproxy "github.com/mmczoo/gotools/proxy"
 	"github.com/xlvector/dlog"
 )
 
@@ -13,14 +15,14 @@ type RClient struct {
 	st  *Statistic
 	cfg *Config
 
-	pxch chan string
+	pxch chan *hproxy.Proxy
 }
 
 func NewRClient(st *Statistic, cfg *Config) *RClient {
 	return &RClient{
 		st:   st,
 		cfg:  cfg,
-		pxch: make(chan string, 4096),
+		pxch: make(chan *hproxy.Proxy, 4096),
 	}
 }
 
@@ -29,8 +31,18 @@ const (
 	IP_CLASS_C = 3
 )
 
+func genArg(px *hproxy.Proxy) string {
+	//1.1.1.1:999&socks5
+	if px == nil {
+		return ""
+	}
+	host, port := px.HostPort()
+	return base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s&%s&%s", host, port, px.Type)))
+	//return base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s&%s", px.IP, px.Type)))
+}
+
 //notice: check ptype ipr
-func (p *RClient) GenIPS(ptype, ipr string, ports []string, ipclass int) {
+func (p *RClient) GenIPS(ptype, ipr string, ports []int, ipclass int) {
 	dots := strings.Split(ipr, ".")
 	switch ipclass {
 	case IP_CLASS_C:
@@ -38,9 +50,13 @@ func (p *RClient) GenIPS(ptype, ipr string, ports []string, ipclass int) {
 			return
 		}
 		for _, port := range ports {
-			for i := 255; i > 0; i-- {
-				tmp := fmt.Sprintf("%s://%s.%s.%s.%d:%s", ptype, dots[0], dots[1], dots[2], i, port)
-				p.pxch <- tmp
+			for i := 254; i > 0; i-- {
+				tmp := fmt.Sprintf("%s://%s.%s.%s.%d:%d", ptype, dots[0], dots[1], dots[2], i, port)
+				px := hproxy.NewProxy(tmp)
+				if px != nil {
+					p.st.CReq++
+					p.pxch <- px
+				}
 			}
 		}
 	case IP_CLASS_B:
@@ -49,9 +65,13 @@ func (p *RClient) GenIPS(ptype, ipr string, ports []string, ipclass int) {
 		}
 		for _, port := range ports {
 			for i := 255; i > 0; i-- {
-				for j := 255; j > 0; j-- {
-					tmp := fmt.Sprintf("%s://%s.%s.%d.%d:%s", ptype, dots[0], dots[1], i, j, port)
-					p.pxch <- tmp
+				for j := 254; j > 0; j-- {
+					tmp := fmt.Sprintf("%s://%s.%s.%d.%d:%d", ptype, dots[0], dots[1], i, j, port)
+					px := hproxy.NewProxy(tmp)
+					if px != nil {
+						p.st.BReq++
+						p.pxch <- px
+					}
 				}
 			}
 		}
@@ -63,7 +83,11 @@ func (p *RClient) GenIPS(ptype, ipr string, ports []string, ipclass int) {
 func (p *RClient) scan(i int) {
 	for {
 		px := <-p.pxch
-		fmt.Println(px)
+		arg := genArg(px)
+		if len(arg) <= 0 {
+			continue
+		}
+		dlog.Println(px, arg)
 	}
 }
 
@@ -87,16 +111,21 @@ func (p *RClient) runAddrs() {
 		p.cfg.AddrsProtocl = append(p.cfg.AddrsProtocl, "http")
 	}
 
+	dlog.Info("-----run addrs")
 	t := time.NewTicker(time.Duration(p.cfg.AddrsIntv) * time.Second)
 	for {
-		<-t.C
 		if len(p.cfg.Addrs) >= 0 {
 			for _, ptype := range p.cfg.AddrsProtocl {
 				for _, addr := range p.cfg.Addrs {
-					p.pxch <- ptype + "://" + addr
+					px := hproxy.NewProxy(ptype + "://" + addr)
+					if px != nil {
+						p.st.AddrsReq++
+						p.pxch <- px
+					}
 				}
 			}
 		}
+		<-t.C
 	}
 }
 
@@ -108,7 +137,31 @@ func (p *RClient) runB() {
 			go p.Run()
 		}
 	}()
+	if len(p.cfg.BIp) <= 0 {
+		return
+	}
 
+	if p.cfg.BIntv <= 60 {
+		p.cfg.BIntv = 60
+	}
+	if len(p.cfg.BProtocl) == 0 {
+		p.cfg.BProtocl = append(p.cfg.BProtocl, "http")
+	}
+
+	if len(p.cfg.BPorts) == 0 {
+		p.cfg.BPorts = append(p.cfg.BPorts, 8080)
+	}
+
+	dlog.Info("-----run B")
+	t := time.NewTicker(time.Duration(p.cfg.BIntv) * time.Second)
+	for {
+		for _, pytpe := range p.cfg.BProtocl {
+			for _, ip := range p.cfg.BIp {
+				p.GenIPS(pytpe, ip, p.cfg.BPorts, IP_CLASS_B)
+			}
+		}
+		<-t.C
+	}
 }
 
 func (p *RClient) runC() {
@@ -119,16 +172,46 @@ func (p *RClient) runC() {
 			go p.Run()
 		}
 	}()
+	if len(p.cfg.CIp) <= 0 {
+		return
+	}
+
+	if p.cfg.CIntv <= 60 {
+		p.cfg.CIntv = 60
+	}
+	if len(p.cfg.CProtocl) == 0 {
+		p.cfg.CProtocl = append(p.cfg.CProtocl, "http")
+	}
+
+	if len(p.cfg.CPorts) == 0 {
+		p.cfg.CPorts = append(p.cfg.CPorts, 8080)
+	}
+
+	dlog.Info("-----run C")
+
+	t := time.NewTicker(time.Duration(p.cfg.CIntv) * time.Second)
+	for {
+		for _, pytpe := range p.cfg.CProtocl {
+			for _, ip := range p.cfg.CIp {
+				p.GenIPS(pytpe, ip, p.cfg.CPorts, IP_CLASS_C)
+			}
+		}
+
+		<-t.C
+	}
 }
 
 func (p *RClient) Run() {
 	conc := p.cfg.AddrsQPS + p.cfg.BQPS + p.cfg.CQPS
-	if conc < 100 {
-		conc = 100
+	if conc < 10 {
+		conc = 10
 	}
 
 	for i := 0; i < conc; i++ {
 		go p.scan(i)
 	}
 
+	go p.runAddrs()
+	go p.runB()
+	go p.runC()
 }

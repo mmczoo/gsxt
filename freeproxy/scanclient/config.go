@@ -9,6 +9,9 @@ import (
 )
 
 type Config struct {
+	PubHttp  string `json:"pubhttp"`
+	PubHttps string `json:"pubhttps"`
+
 	AddrsProtocl []string `json:"addrsprotocol"`
 	Addrs        []string `json:"addrs"`
 	AddrsIntv    int      `json:"addrsintv"`
@@ -16,13 +19,13 @@ type Config struct {
 
 	BProtocl []string `json:"bprotocol"`
 	BIp      []string `json:"bip"`
-	BPorts   []string `json:"bports"`
+	BPorts   []int    `json:"bports"`
 	BIntv    int      `json:"bintv"`
 	BQPS     int      `json:"bqps"`
 
 	CProtocl []string `json:"cprotocol"`
 	CIp      []string `json:"cip"`
-	CPorts   []string `json:"cports"`
+	CPorts   []int    `json:"cports"`
 	CIntv    int      `json:"cintv"`
 	CQPS     int      `json:"cqps"`
 }

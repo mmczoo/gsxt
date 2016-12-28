@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/xlvector/dlog"
+	_ "net/http/pprof"
 )
 
 func main() {

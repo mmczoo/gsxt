@@ -1,9 +1,17 @@
 package main
 
-import "net/http"
+import (
+	"encoding/json"
+	//	"fmt"
+	"net/http"
+)
 
 type Statistic struct {
 	model *Model
+
+	AddrsReq int64
+	BReq     int64
+	CReq     int64
 }
 
 func NewStatistic(m *Model) *Statistic {
@@ -13,4 +21,10 @@ func NewStatistic(m *Model) *Statistic {
 }
 
 func (p *Statistic) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	data, _ := json.Marshal(map[string]int64{
+		"addrs": p.AddrsReq,
+		"b":     p.BReq,
+		"c":     p.CReq,
+	})
+	w.Write(data)
 }
