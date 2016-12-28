@@ -1,0 +1,20 @@
+{
+  "addrsprotocol": [],
+  "addrs":[],
+  "addrsintv":10,
+  "addrsqps":100,
+
+  "bprotocol": [],
+  "bip":[],
+  "bports":[],
+  "bintv": 10,
+  "bqps":100,
+
+  "cprotocol": [],
+  "cip":[],
+  "cports":[],
+  "intv": 10,
+  "cqps":100
+
+
+}
