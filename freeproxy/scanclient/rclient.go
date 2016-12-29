@@ -86,14 +86,16 @@ func (p *RClient) GenIPS(ptype, ipr string, ports []int, ipclass int) {
 }
 
 func gdail(netw, addr string) (net.Conn, error) {
-	timeout := time.Duration(5) * time.Second
+	timeout := time.Duration(3) * time.Second
 	deadline := time.Now().Add(timeout)
 	c, err := net.DialTimeout(netw, addr, timeout)
 	if err != nil {
 		return nil, err
 	}
 	c.SetDeadline(deadline)
-	return c, nil
+	tcp_conn := c.(*net.TCPConn)
+	tcp_conn.SetKeepAlive(false)
+	return tcp_conn, nil
 }
 
 func (p *RClient) scan(i int) {
@@ -109,8 +111,9 @@ func (p *RClient) scan(i int) {
 		//dlog.Println(px, arg)
 		hpx, _ := url.Parse(px.String())
 		transport := &http.Transport{
-			Dial:  gdail,
-			Proxy: http.ProxyURL(hpx),
+			Dial:              gdail,
+			DisableKeepAlives: true,
+			Proxy:             http.ProxyURL(hpx),
 		}
 		//dlog.Info("== %v %v", px, arg)
 
@@ -121,6 +124,7 @@ func (p *RClient) scan(i int) {
 			p.st.ScanNum++
 			defer resp.Body.Close()
 		}
+
 	}
 }
 
@@ -222,7 +226,7 @@ func (p *RClient) runC() {
 		p.cfg.CPorts = append(p.cfg.CPorts, 8080)
 	}
 
-	dlog.Info("-----run C")
+	dlog.Info("-----run C, %d", len(p.cfg.CIp))
 
 	t := time.NewTicker(time.Duration(p.cfg.CIntv) * time.Second)
 	for {
