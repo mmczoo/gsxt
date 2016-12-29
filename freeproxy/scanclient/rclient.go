@@ -112,7 +112,7 @@ func (p *RClient) scan(i int) {
 			Dial:  gdail,
 			Proxy: http.ProxyURL(hpx),
 		}
-		dlog.Info("== %v %v", px, arg)
+		//dlog.Info("== %v %v", px, arg)
 
 		gclient.Transport = transport
 		link := linkbase + "?arg=" + arg
@@ -147,6 +147,7 @@ func (p *RClient) runAddrs() {
 	dlog.Info("-----run addrs")
 	t := time.NewTicker(time.Duration(p.cfg.AddrsIntv) * time.Second)
 	for {
+		p.st.AddrsTimes++
 		if len(p.cfg.Addrs) >= 0 {
 			for _, ptype := range p.cfg.AddrsProtocl {
 				for _, addr := range p.cfg.Addrs {
@@ -188,6 +189,7 @@ func (p *RClient) runB() {
 	dlog.Info("-----run B")
 	t := time.NewTicker(time.Duration(p.cfg.BIntv) * time.Second)
 	for {
+		p.st.BTimes++
 		for _, pytpe := range p.cfg.BProtocl {
 			for _, ip := range p.cfg.BIp {
 				p.GenIPS(pytpe, ip, p.cfg.BPorts, IP_CLASS_B)
@@ -224,6 +226,7 @@ func (p *RClient) runC() {
 
 	t := time.NewTicker(time.Duration(p.cfg.CIntv) * time.Second)
 	for {
+		p.st.CTimes++
 		for _, pytpe := range p.cfg.CProtocl {
 			for _, ip := range p.cfg.CIp {
 				p.GenIPS(pytpe, ip, p.cfg.CPorts, IP_CLASS_C)
