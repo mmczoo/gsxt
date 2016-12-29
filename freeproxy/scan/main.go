@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"log"
 	"net/http"
 )
 
@@ -14,7 +15,7 @@ func main() {
 
 	h := NewScanHTTPServer(m)
 
-	http.ListenAndServe(cfg.HttpBind, h)
+	log.Fatal(http.ListenAndServe(cfg.HttpBind, h))
 	/*
 		}()
 		go func() {

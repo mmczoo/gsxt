@@ -12,6 +12,11 @@ type Config struct {
 	HttpBind string `json:"httpbind"`
 	Host     string `json:"host"`
 	Port     int    `json:"port"`
+
+	RedisAddr string `json:"redisaddr"`
+	Key       string `json:"key"`
+	Db        int64  `json:"db"`
+	Type      string `json:"type"`
 }
 
 func NewConfig(fname string) *Config {

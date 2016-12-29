@@ -1,5 +1,10 @@
 {
   "host": "",
   "port": 8888,
-  "httpbind": ":80"
+  "httpbind": ":80",
+  "db": 0,
+  "key": "",
+  "redisaddr": "",
+
+  "type": "redis"
 }
