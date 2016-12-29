@@ -12,6 +12,8 @@ type Statistic struct {
 	AddrsReq int64
 	BReq     int64
 	CReq     int64
+
+	ScanNum int64
 }
 
 func NewStatistic(m *Model) *Statistic {
@@ -25,6 +27,7 @@ func (p *Statistic) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		"addrs": p.AddrsReq,
 		"b":     p.BReq,
 		"c":     p.CReq,
+		"scan":  p.ScanNum,
 	})
 	w.Write(data)
 }

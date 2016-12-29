@@ -12,13 +12,19 @@ func main() {
 	cfg := NewConfig(*fn)
 	m := NewModel(cfg)
 
-	go func() {
-		h := NewScanHTTPServer(m)
-		http.ListenAndServe(":8080", h)
-	}()
+	h := NewScanHTTPServer(m)
 
-	hs := NewScanHTTPSServer(m)
-	http.ListenAndServeTLS(":8043", "server.crt",
-		"server.key", hs)
+	http.ListenAndServe(cfg.HttpBind, h)
+	/*
+		}()
+		go func() {
+			h := NewScanHTTPServer(m)
+			http.ListenAndServe(":8080", h)
+		}()
+
+		hs := NewScanHTTPSServer(m)
+		http.ListenAndServeTLS(":8043", "server.crt",
+			"server.key", hs)
+	*/
 
 }

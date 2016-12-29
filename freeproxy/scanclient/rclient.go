@@ -2,11 +2,15 @@ package main
 
 import (
 	"fmt"
+	"net"
+	"net/http"
+	"net/url"
 	"runtime/debug"
 	"strings"
 	"time"
 
 	"encoding/base64"
+
 	hproxy "github.com/mmczoo/gotools/proxy"
 	"github.com/xlvector/dlog"
 )
@@ -39,6 +43,7 @@ func genArg(px *hproxy.Proxy) string {
 	host, port := px.HostPort()
 	return base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s&%s&%s", host, port, px.Type)))
 	//return base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s&%s", px.IP, px.Type)))
+
 }
 
 //notice: check ptype ipr
@@ -80,14 +85,42 @@ func (p *RClient) GenIPS(ptype, ipr string, ports []int, ipclass int) {
 	}
 }
 
+func gdail(netw, addr string) (net.Conn, error) {
+	timeout := time.Duration(5) * time.Second
+	deadline := time.Now().Add(timeout)
+	c, err := net.DialTimeout(netw, addr, timeout)
+	if err != nil {
+		return nil, err
+	}
+	c.SetDeadline(deadline)
+	return c, nil
+}
+
 func (p *RClient) scan(i int) {
+	var gclient = http.Client{}
+	linkbase := p.cfg.PubHttp
+
 	for {
 		px := <-p.pxch
 		arg := genArg(px)
 		if len(arg) <= 0 {
 			continue
 		}
-		dlog.Println(px, arg)
+		//dlog.Println(px, arg)
+		hpx, _ := url.Parse(px.String())
+		transport := &http.Transport{
+			Dial:  gdail,
+			Proxy: http.ProxyURL(hpx),
+		}
+		dlog.Info("== %v %v", px, arg)
+
+		gclient.Transport = transport
+		link := linkbase + "?arg=" + arg
+		resp, _ := gclient.Get(link)
+		if resp != nil && resp.Body != nil {
+			p.st.ScanNum++
+			defer resp.Body.Close()
+		}
 	}
 }
 

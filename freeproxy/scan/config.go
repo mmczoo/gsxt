@@ -9,8 +9,9 @@ import (
 )
 
 type Config struct {
-	Host string `json:"host"`
-	Port int    `json:"port"`
+	HttpBind string `json:"httpbind"`
+	Host     string `json:"host"`
+	Port     int    `json:"port"`
 }
 
 func NewConfig(fname string) *Config {
