@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -99,7 +100,12 @@ func gdail(netw, addr string) (net.Conn, error) {
 }
 
 func (p *RClient) scan(i int) {
-	var gclient = http.Client{}
+	var gclient = http.Client{
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			dlog.Warn("Redirct: %s", req.URL.String())
+			return errors.New("Redirect!")
+		},
+	}
 	linkbase := p.cfg.PubHttp
 
 	for {
