@@ -128,7 +128,7 @@ func (p *RClient) scan(i int) {
 		resp, _ := gclient.Get(link)
 		if resp != nil && resp.Body != nil {
 			p.st.ScanNum++
-			defer resp.Body.Close()
+			resp.Body.Close()
 		}
 
 	}
