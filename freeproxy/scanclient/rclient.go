@@ -102,7 +102,7 @@ func gdail(netw, addr string) (net.Conn, error) {
 func (p *RClient) scan(i int) {
 	var gclient = http.Client{
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			dlog.Warn("Redirct: %s", req.URL.String())
+			dlog.Warn("Redirct: %s %v", req.URL.String(), req.Header)
 			return errors.New("Redirect!")
 		},
 	}
@@ -125,7 +125,12 @@ func (p *RClient) scan(i int) {
 
 		gclient.Transport = transport
 		link := linkbase + "?arg=" + arg
-		resp, _ := gclient.Get(link)
+		reqest, err := http.NewRequest("GET", link, nil)
+		if err != nil {
+			continue
+		}
+		reqest.Header.Add("User-Agent", "curl/7.35.0")
+		resp, _ := gclient.Do(reqest)
 		if resp != nil && resp.Body != nil {
 			p.st.ScanNum++
 			resp.Body.Close()
