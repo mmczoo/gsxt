@@ -102,7 +102,7 @@ func gdail(netw, addr string) (net.Conn, error) {
 func (p *RClient) scan(i int) {
 	var gclient = http.Client{
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			dlog.Warn("Redirct: %s %v", req.URL.String(), req.Header)
+			//dlog.Warn("Redirct: %s %v", req.URL.String(), req.Header)
 			return errors.New("Redirect!")
 		},
 	}
