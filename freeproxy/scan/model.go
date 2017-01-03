@@ -11,8 +11,9 @@ import (
 )
 
 const (
-	SAVE_TYPE_SSDB  = 1
-	SAVE_TYPE_REDIS = 2
+	SAVE_TYPE_SSDB      = 1
+	SAVE_TYPE_REDIS     = 2
+	SAVE_TYPE_SSDB_ZSET = 3
 )
 
 type Model struct {
@@ -42,8 +43,7 @@ func NewModel(conf *Config) *Model {
 			saveType: SAVE_TYPE_REDIS,
 		}
 
-	} else if conf.Type == "ssdb" {
-
+	} else if conf.Type == "ssdb" || conf.Type == "ssdb-zset" {
 		pool, err := gossdb.NewPool(&gossdb.Config{
 			Host:             conf.Host,
 			Port:             conf.Port,
@@ -61,12 +61,19 @@ func NewModel(conf *Config) *Model {
 			log.Fatal(err)
 			return nil
 		}
-		return &Model{
+
+		m := &Model{
 			pool:     pool,
 			client:   c,
 			conf:     conf,
 			saveType: SAVE_TYPE_SSDB,
 		}
+
+		if conf.Type == "ssdb-zset" {
+			m.saveType = SAVE_TYPE_SSDB_ZSET
+		}
+		return m
+
 	} else {
 		log.Fatal("config type fail!")
 		return nil
@@ -85,6 +92,10 @@ func (p *Model) SavePx(px string) (int64, error) {
 		sz, err := cmd.Result()
 		dlog.Info("savepx: %d %v %v", sz, err, px)
 		return sz, err
+	case SAVE_TYPE_SSDB_ZSET:
+		err := p.client.Zset(p.conf.Key, px, time.Now().Unix())
+		dlog.Info("savepx: %v %v", err, px)
+		return 1, err
 	}
 	return 0, nil
 }
