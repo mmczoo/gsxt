@@ -28,7 +28,7 @@ class Crawler(object):
         "Accept-Language":"zh-CN,zh;q=0.8",
         "Cache-Control":"no-cache",
         "Connection":"keep-alive",
-        "Host":"www.baidu.com",
+        #"Host":"www.baidu.com",
         "Pragma":"no-cache",
         "Upgrade-Insecure-Requests":"1",
         "User-Agent":"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36",
@@ -68,12 +68,12 @@ class Crawler(object):
 
     #need code for real crawler
     #ret: True success  False: try get
-    def procListPage(self, data):
+    def procListPage(self, data, url):
         pass
 
     #need code for real crawler
     #ret: True success  False: try get
-    def procDetailPage(self, data):
+    def procDetailPage(self, data, url):
         pass
 
     def addListUrl(self, url):
@@ -99,7 +99,7 @@ class Crawler(object):
             mylog.error("crawl fail: %s" % (r.status_code))
             self.downloadFail(url, PAGE_TYPE_LIST)
             return
-        if not self.procListPage(r.content):
+        if not self.procListPage(r.content, url):
             mylog.error("proc fail: %s", url)
             self.downloadFail(url, PAGE_TYPE_LIST)
 
@@ -116,7 +116,7 @@ class Crawler(object):
             mylog.error("detail crawl fail: %s" % (r.status_code))
             self.downloadFail(url, PAGE_TYPE_DETAIL)
             return
-        if not self.procDetailPage(r.content):
+        if not self.procDetailPage(r.content, url):
             mylog.error("detail proc fail: %s")
             self.downloadFail(url, PAGE_TYPE_DETAIL)
 
