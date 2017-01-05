@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"errors"
 	"fmt"
 	"net"
@@ -9,6 +10,8 @@ import (
 	"runtime/debug"
 	"strings"
 	"time"
+
+	"golang.org/x/net/proxy"
 
 	"encoding/base64"
 
@@ -99,6 +102,80 @@ func gdail(netw, addr string) (net.Conn, error) {
 	return tcp_conn, nil
 }
 
+func getTransport(p *hproxy.Proxy) *http.Transport {
+	if p == nil {
+		return nil
+	}
+
+	transport := &http.Transport{
+		DisableKeepAlives:     true,
+		ResponseHeaderTimeout: time.Second * 15,
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: true,
+			MaxVersion:         tls.VersionTLS12,
+			MinVersion:         tls.VersionTLS10,
+			CipherSuites: []uint16{
+				tls.TLS_RSA_WITH_RC4_128_SHA,
+				tls.TLS_RSA_WITH_3DES_EDE_CBC_SHA,
+				tls.TLS_RSA_WITH_AES_128_CBC_SHA,
+				tls.TLS_RSA_WITH_AES_256_CBC_SHA,
+				tls.TLS_ECDHE_ECDSA_WITH_RC4_128_SHA,
+				tls.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,
+				tls.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,
+				tls.TLS_ECDHE_RSA_WITH_RC4_128_SHA,
+				tls.TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA,
+				tls.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
+				tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
+				tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+				tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+			},
+		},
+	}
+
+	if p.Type == "socks5" {
+		var auth *proxy.Auth
+		if len(p.Username) > 0 && len(p.Password) > 0 {
+			auth = &proxy.Auth{
+				User:     p.Username,
+				Password: p.Password,
+			}
+		} else {
+			auth = &proxy.Auth{}
+		}
+		forward := proxy.FromEnvironment()
+		dialSocks5Proxy, err := proxy.SOCKS5("tcp", p.IP, auth, forward)
+		if err != nil {
+			dlog.Warn("SetSocks5 Error:%s", err.Error())
+			return nil
+		}
+		transport.Dial = dialSocks5Proxy.Dial
+	} else if p.Type == "http" || p.Type == "https" {
+		transport.Dial = gdail
+		proxyUrl, err := url.Parse(p.String())
+		if err == nil {
+			transport.Proxy = http.ProxyURL(proxyUrl)
+		} else {
+			return nil
+		}
+	} else if p.Type == "socks4" {
+		surl := "socks4://" + p.IP
+		rsurl, err := url.Parse(surl)
+		if err != nil {
+			dlog.Warn("socks4 url parse: %v", err)
+			return nil
+		}
+		forward := proxy.FromEnvironment()
+		dialersocks4, err := proxy.FromURL(rsurl, forward)
+		if err != nil {
+			dlog.Warn("SetSocks4 Error:%s", err.Error())
+			return nil
+		}
+		transport.Dial = dialersocks4.Dial
+	}
+
+	return transport
+}
+
 func (p *RClient) scan(i int) {
 	var gclient = http.Client{
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
@@ -115,16 +192,16 @@ func (p *RClient) scan(i int) {
 			continue
 		}
 		//dlog.Println(px, arg)
-		hpx, _ := url.Parse(px.String())
-		transport := &http.Transport{
-			Dial:              gdail,
-			DisableKeepAlives: true,
-			Proxy:             http.ProxyURL(hpx),
-		}
+		transport := getTransport(px)
 		//dlog.Info("== %v %v", px, arg)
+
+		if transport == nil {
+			continue
+		}
 
 		gclient.Transport = transport
 		link := linkbase + "?arg=" + arg
+		//dlog.Info("== %v %s", px, link)
 		reqest, err := http.NewRequest("GET", link, nil)
 		if err != nil {
 			continue
