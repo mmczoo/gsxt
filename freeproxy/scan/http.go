@@ -34,7 +34,7 @@ func (p *ScanHTTPServer) dealwith(px string) bool {
 	}
 	proxy := fmt.Sprintf("%s://%s:%s", tmp[2], tmp[0], tmp[1])
 	dlog.Info("px== %s", proxy)
-	go p.model.SavePx(proxy)
+	go p.model.SavePx(proxy, tmp[2])
 	return true
 }
 

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"log"
 	"time"
 
@@ -81,19 +82,27 @@ func NewModel(conf *Config) *Model {
 
 }
 
-func (p *Model) SavePx(px string) (int64, error) {
+func (p *Model) SavePx(px, protocol string) (int64, error) {
+	key, ok := p.conf.Key[protocol]
+	if !ok {
+		key, ok = p.conf.Key["other"]
+		if !ok {
+			dlog.Warn("protocol fail! %s %s", px, protocol)
+			return 0, errors.New("protocl fail!")
+		}
+	}
 	switch p.saveType {
 	case SAVE_TYPE_SSDB:
-		sz, err := p.client.Qpush(p.conf.Key, px)
+		sz, err := p.client.Qpush(key, px)
 		dlog.Info("savepx: %d %v %v", sz, err, px)
 		return sz, err
 	case SAVE_TYPE_REDIS:
-		cmd := p.rediscli.LPush(p.conf.Key, px)
+		cmd := p.rediscli.LPush(key, px)
 		sz, err := cmd.Result()
 		dlog.Info("savepx: %d %v %v", sz, err, px)
 		return sz, err
 	case SAVE_TYPE_SSDB_ZSET:
-		err := p.client.Zset(p.conf.Key, px, time.Now().Unix())
+		err := p.client.Zset(key, px, time.Now().Unix())
 		dlog.Info("savepx: %v %v", err, px)
 		return 1, err
 	}
