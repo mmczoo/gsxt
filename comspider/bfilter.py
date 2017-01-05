@@ -44,7 +44,7 @@ class Filter(object):
 
 
 if __name__ == "__main__":
-    f = Filter()
-    print f.isExists("fjdaskhfhhhhfhffffff")
-    print f.add("fjdaskhfhhhhfhffffff")
-    print f.isExists("fjdaskhfhhhhfhffffff")
+    f = Filter(fname="csdn_filter.bloom")
+
+    print f.isExists("http://blog.csdn.net/jiangwei0910410003/article/details/53954686")
+    print f.isExists("http://blog.csdn.net")

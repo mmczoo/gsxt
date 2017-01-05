@@ -36,10 +36,11 @@ class Crawler(object):
 
     def __init__(self, name, fbloom=None, errtry=None,concurent=5):
         self.concurent = concurent
-        self.tasks = Queue.Queue(maxsize=10000)
-        self.details = Queue.Queue(maxsize=10000) 
+        self.tasks = Queue.Queue(maxsize=1000000)
+        self.details = Queue.Queue(maxsize=10) 
         self.tmpl = name
         self.ss = requests.session()
+        self.proxies = {}
 
         day = time.strftime("%Y%m%d", time.localtime())
         if not fbloom:
@@ -90,36 +91,39 @@ class Crawler(object):
     def crawlList(self, url):
         hurl = url
         try:
-            r = self.ss.get(hurl, verify=False, headers=self.headers)
+            r = self.ss.get(hurl, verify=False, headers=self.headers, proxies=self.proxies)
         except Exception as e:
-            mylog.error("crawl fail: %s" % (e))
+            mylog.error("crawl fail: %s %s" % (e, url))
             self.downloadFail(url, PAGE_TYPE_LIST)
             return
         if r.status_code != 200:
-            mylog.error("crawl fail: %s" % (r.status_code))
+            mylog.error("crawl fail: %s %s" % (r.status_code, url))
             self.downloadFail(url, PAGE_TYPE_LIST)
             return
         if not self.procListPage(r.content, url):
             mylog.error("proc fail: %s", url)
             self.downloadFail(url, PAGE_TYPE_LIST)
+        else:
+            self.bfilter.add(url)
 
 
     def crawlDetail(self, url):
         hurl = url 
         try:
-            r = self.ss.get(hurl, verify=False, headers=self.headers)
+            r = self.ss.get(hurl, verify=False, headers=self.headers, proxies=self.proxies)
         except Exception as e:
             mylog.error("detail crawl fail: %s %s" % (e, url))
             self.downloadFail(url, PAGE_TYPE_DETAIL)
             return
         if r.status_code != 200:
-            mylog.error("detail crawl fail: %s" % (r.status_code))
+            mylog.error("detail crawl fail: %s %s" % (r.status_code, url))
             self.downloadFail(url, PAGE_TYPE_DETAIL)
             return
         if not self.procDetailPage(r.content, url):
-            mylog.error("detail proc fail: %s")
+            mylog.error("detail proc fail: %s" %  url)
             self.downloadFail(url, PAGE_TYPE_DETAIL)
-
+        else:
+            self.bfilter.add(url)
 
     def run(self):
         self.initTasks()

@@ -7,10 +7,11 @@ mylog.basicConfig(level=mylog.INFO,
 from bfilter import Filter 
 
 class ErrorTry(object):
-    def __init__(self, trymax=5, fname="errtry.bloom"):
+    def __init__(self, trymax=3, fname="errtry.bloom", errlink="errlink.txt"):
         self.trydict = {}
         self.bfilter = Filter(capacity=100000, fname=fname)
         self.trymax = trymax
+        self.errlinkfd = open(errlink, "a+")
 
     def isTry(self, value):
         if not value:
@@ -25,6 +26,7 @@ class ErrorTry(object):
             self.bfilter.add(value)
             self.trydict.pop(value)
             mylog.warn("maxtry: %s" % value)
+            self.errlinkfd.write(value + "\n")
             return False
 
         try:
@@ -33,6 +35,9 @@ class ErrorTry(object):
             self.trydict[value] = 1
 
         return True
+
+    def sync(self):
+        self.bfilter.sync()
 
 
 if __name__ == "__main__":
