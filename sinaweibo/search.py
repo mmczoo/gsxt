@@ -80,7 +80,10 @@ users = {}
 
 #key = u"papa"
 #keys = ["mami", "mama", "jingyou"]
-keys = []
+#keys = ["php", "java", "c", "python", "c++", "golang", "perl", "lua", "js", "html", "hadoop",
+#    "blog", "debu", "www", "web", "hot", "hw", "a", "b", "c"]
+keys = ["donglin"]
+
 for key in keys:
     data = auth_ord(key)
     fn = genfile(key)
@@ -119,6 +122,7 @@ for key in keys:
     with open(fn, "w+") as f:
         json.dump(users, f)
     #getuser("1767059140")
+    users = {}
     time.sleep(random.randint(15,40))
 
 
