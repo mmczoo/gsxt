@@ -38,6 +38,7 @@ class CrawlerCsdn(Crawler):
         self.proxies = {
                 "http": "http://127.0.0.1:8080"
                 }
+        self.cache = set()
 
 
     def initTasks(self):
@@ -69,10 +70,18 @@ class CrawlerCsdn(Crawler):
                 continue
             if ".ppt" in link or ".doc" in link:
                 continue
+            if ".gz" in link or ".zip" in link:
+                continue
             if "csdn.net" not in link:
+                continue
+
+            if link in self.cache:
                 continue
             if not self.bfilter.isExists(link):
                 self.addListUrl(link)
+                self.cache.add(link)
+            if len(self.cache) > 1000:
+                self.cache.clear()
 
     #ret: True success  False: try get
     def procListPage(self, data, url):
@@ -103,12 +112,12 @@ class CrawlerCsdn(Crawler):
     def crawlList(self, url):
         hurl = url
         try:
-            r = self.ss.get(hurl, verify=False, headers=self.headers, proxies=self.proxies)
+            r = self.ss.get(hurl, verify=False, headers=self.headers, proxies=self.proxies, timeout=120)
         except Exception as e:
             mylog.error("crawl fail: %s %s" % (e, url))
             self.downloadFail(url, PAGE_TYPE_LIST)
             return
-        if r.status_code == 404:
+        if r.status_code == 404 or r.status_code == 444 or r.status_code==500:
             mylog.error("crawl fail: %s %s" % (r.status_code, url))
             self.bfilter.add(url)
             self.fd404.write(url + "\n")
