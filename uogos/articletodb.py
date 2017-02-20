@@ -10,13 +10,6 @@ import json
 from bs4 import BeautifulSoup
 import MySQLdb
 
-dbcfg = {
-        "host": "101.200.87.104",
-        "port": 3306,
-        "user": "mmczoo",
-        "password": "mmczoo@git",
-        "db": "jtyd",
-        }
 conn=MySQLdb.connect(host=dbcfg["host"],
             user=dbcfg["user"],
             passwd=dbcfg["password"],
